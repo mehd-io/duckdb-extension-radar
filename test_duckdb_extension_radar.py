@@ -28,6 +28,7 @@ def search_results_mock():
 def repository_info_mock():
     mock_response = MagicMock()
     mock_response.json.return_value = {
+        "full_name": "octocat/Hello-World",
         "html_url": "https://github.com/octocat/Hello-World",
         "description": "This is a description",
         "stargazers_count": 100,
@@ -61,7 +62,8 @@ def test_get_repository_info(mock_get, repository_info_mock):
         "https://api.github.com/repos/octocat/Hello-World", headers
     )
     assert response == {
-        "Repository": "https://github.com/octocat/Hello-World",
+        "Repository": "octocat/Hello-World",
+        "Url": "https://github.com/octocat/Hello-World",
         "About": "This is a description",
         "Stars": 100,
         "Created": "2022-01-01T00:00:00Z",
