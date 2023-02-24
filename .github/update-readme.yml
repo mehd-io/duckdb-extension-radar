@@ -1,0 +1,36 @@
+name: Update README with GitHub repos
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run every day at midnight
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        uses: abatilo/actions-poetry@v2
+        run: poetry install
+
+      - name: Run script
+        run: poetry run python duckdb_extension_radar.py
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'Update README with GitHub repos'
+          commit_options: '--no-verify'
+          commit_user_name: 'GitHub Actions'
+          commit_user_email: 'actions@github.com'
+          file_pattern: 'README.md'
+          branch: ${{ github.ref }}
