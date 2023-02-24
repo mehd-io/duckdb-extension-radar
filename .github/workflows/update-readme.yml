@@ -1,11 +1,8 @@
 name: Update README with GitHub repos
 
 on:
-  push:
-    branches:
-      - main
-  #schedule:
-    #- cron: '0 0 * * *' # Run every day at midnight
+  schedule:
+    - cron: '0 0 * * *' # Run every day at midnight
 
 jobs:
   update-readme:
