@@ -92,7 +92,7 @@ def generate_readme(df: pd.DataFrame):
     header = "![DuckDB Extensions Radar](/img/duckdb_extension_radar.png?raw=true)\n"
     header += "# DuckDB Extensions Radar\n"
     description = f'\nThis repo contains information about DuckDB extensions found on GitHub. Refreshed daily. Sorted by Created date. \n Last refresh **{date.today().strftime("%Y-%m-%d")}**.'
-    warning = "## ⚠️ Warning\n This a bit hacky and searching for repos containing the string `.duckdb_extension`."
+    warning = "## ⚠️ Warning\n This a bit hacky and searching for repos containing the string `.duckdb_extension`. so not at all reliable." 
     readme_md = f"{header}{description}\n{warning}\n{table_md}"
     # Write the README file
     with open("README.md", "w", encoding="utf-8") as f:
