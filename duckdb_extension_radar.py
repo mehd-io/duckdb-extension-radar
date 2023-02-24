@@ -63,7 +63,7 @@ def search_github_repos(query: str, filename: Optional[str] = None) -> pd.DataFr
         repo_dict = get_repository_info(repo_url, headers)
         contributors_url = repo_dict.get("contributors_url")
         if contributors_url:
-            repo_dict["Contributors (Username)"] = get_contributors(
+            repo_dict["Contributors"] = get_contributors(
                 contributors_url, headers
             )
         repos.append(repo_dict)
@@ -76,12 +76,22 @@ def generate_readme(df: pd.DataFrame):
     df["Repository"] = df.apply(
         lambda row: f"[{row['Repository']}]({row['Url']})", axis=1
     )
+    # select the columns to display
+    df = df[
+        [
+            "Repository",
+            "Stars",
+            "Created",
+            "Last Commit",
+            "About",
+        ]
+    ]
     # Generate a nice table in Markdown format
     table_md = df.to_markdown(index=False)
     # Add header and description
-    header = "# DuckDB Extensions Radar\n"
-    header += "![DuckDB Extensions Radar](/img/duckdb_extension_radar.png?raw=true)\n"
-    description = f'\nThis repo contains information about DuckDB extensions found on GitHub. Refreshed daily. Last refresh **{date.today().strftime("%Y-%m-%d")}**.'
+    header = "![DuckDB Extensions Radar](/img/duckdb_extension_radar.png?raw=true)\n"
+    header += "# DuckDB Extensions Radar\n"
+    description = f'\nThis repo contains information about DuckDB extensions found on GitHub. Refreshed daily. Sorted by Created date. \n Last refresh **{date.today().strftime("%Y-%m-%d")}**.'
     warning = "## ⚠️ Warning\n This a bit hacky and searching for repos containing the string `.duckdb_extension`."
     readme_md = f"{header}{description}\n{warning}\n{table_md}"
     # Write the README file
