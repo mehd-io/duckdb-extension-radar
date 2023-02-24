@@ -75,7 +75,7 @@ def generate_readme(df: pd.DataFrame):
     table_md = df.to_markdown(index=False)
     # Add header and description
     header = "# DuckDB Extensions Radar\n"
-    header += "![DuckDB Extensions Radar](img/duckdb_extensions_radar.png)\n"
+    header += "![DuckDB Extensions Radar](/img/duckdb_extensions_radar.pn?raw=true)\n"
     description = f'This repo contains information about DuckDB extensions found on GitHub. Refreshed daily. Last refresh **{date.today().strftime("%Y-%m-%d")}**.'
     readme_md = f"{header}{description}\n\n{table_md}"
     # Write the README file
