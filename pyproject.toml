@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Scans DuckDB extensions repos and display it in a nice README"
 authors = ["mehd-io <mehdi@mehd.io>"]
 readme = "README.md"
-packages = [{include = "duckdb_extension_radar"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
