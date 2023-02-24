@@ -1,5 +1,5 @@
 # DuckDB Extensions Radar
-![DuckDB Extensions Radar](img/duckdb_extensions_radar.png)
+![DuckDB Extensions Radar](/img/duckdb_extension_radar.png)
 This repo contains information about DuckDB extensions found on GitHub. Refreshed daily. Last refresh **2023-02-24**.
 
 | Repository                                                     | About                                                                                                                                                                                                                                                                              |   Stars | Created              | Last Commit          |
