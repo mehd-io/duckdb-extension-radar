@@ -42,26 +42,32 @@ def search_github_repos(
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
     repos = []
+    repo_urls = set()
     page = 1
     while True:
         response_json = get_search_results(query, filename, page)
+        for item in response_json.get("items", []):
+            repo_urls.add(item["repository"]["url"])
+
         if not response_json["items"] or page > max_pages:
             break
 
-        for item in response_json["items"]:
-            repo_url = item["repository"]["url"]
-            repo_dict = get_repository_info(repo_url, headers)
-            if not repo_dict:  # Handle empty dictionary
-                continue
-            contributors_url = repo_dict.get("contributors_url")
-            if contributors_url:
-                repo_dict["Contributors"] = get_contributors(contributors_url, headers)
-            repos.append(repo_dict)
-
         page += 1
+
     logger.info(
-        f"Finished searching GitHub repos, total repositories found: {len(repos)}"
+        f"Finished searching GitHub repos, total repositories found: {len(repo_urls)}"
     )
+
+    # Populate repos with data from the repo url since the response from the
+    # search API does not contain all the data.
+    for url in repo_urls:
+        repos.append(get_repository_info(url, headers))
+
+    # This isn't currently used
+    # for repo in repos:
+    #     contributors_url = repo.get("contributors_url")
+    #     if contributors_url:
+    #         repo["Contributors"] = get_contributors(contributors_url, headers)
     return pd.DataFrame(repos)
 
 
@@ -78,14 +84,9 @@ def get_repository_info(repo_url: str, headers: Dict) -> Dict:
         "Url": repo_json["html_url"],
         "About": repo_json["description"],
         "Stars": repo_json["stargazers_count"],
+        "Created": repo_json["created_at"],
+        "Last Commit": repo_json["pushed_at"],
     }
-
-    # Get information about the repository
-    repo_info_url = repo_json["url"]
-    repo_info_response = requests.get(repo_info_url, headers=headers)
-    repo_info_json = repo_info_response.json()
-    repo_dict["Created"] = repo_info_json["created_at"]
-    repo_dict["Last Commit"] = repo_info_json["pushed_at"]
 
     return repo_dict
 
