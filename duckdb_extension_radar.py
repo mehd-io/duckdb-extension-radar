@@ -108,7 +108,7 @@ def generate_readme(df: pd.DataFrame):
     ]
     # Sort by Last Updated date
     sorted_df = df.copy()
-    sorted_df.sort_values(by='Last Updated', ascending=False, inplace=True)
+    sorted_df.sort_values(by="Last Updated", ascending=False, inplace=True)
     # Generate a nice table in Markdown format
     table_md = sorted_df.to_markdown(index=False)
     # Add header and description
