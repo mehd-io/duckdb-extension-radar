@@ -1,5 +1,5 @@
 import os
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
@@ -23,6 +23,7 @@ def mock_response():
                             "stargazers": {"totalCount": 42},
                             "createdAt": "2020-01-01T00:00:00Z",
                             "updatedAt": "2020-01-02T00:00:00Z",
+                            "owner": {"login": "user"},
                         }
                     }
                 ],
@@ -65,6 +66,7 @@ def graphql_responses():
                                 "stargazers": {"totalCount": 10},
                                 "createdAt": "2021-01-01T00:00:00Z",
                                 "updatedAt": "2021-01-02T00:00:00Z",
+                                "owner": {"login": "user1"},
                             },
                             "cursor": "cursor1",
                         }
@@ -85,6 +87,7 @@ def graphql_responses():
                                 "stargazers": {"totalCount": 20},
                                 "createdAt": "2022-02-01T00:00:00Z",
                                 "updatedAt": "2022-02-02T00:00:00Z",
+                                "owner": {"login": "user2"},
                             },
                             "cursor": "cursor2",
                         }
@@ -105,7 +108,7 @@ def test_search_github_repos(mock_run_query, graphql_responses):
 
     result_df = search_github_repos("dummy_extension")
 
-    # Define what the expected DataFrame should look like
+    # Define what the expected DataFrame should look like with the correct column order
     expected_df = pd.DataFrame(
         {
             "Repository": ["Repo1", "Repo2"],
@@ -114,6 +117,7 @@ def test_search_github_repos(mock_run_query, graphql_responses):
             "Stars": [10, 20],
             "Created": ["2021-01-01T00:00:00Z", "2022-02-01T00:00:00Z"],
             "Last Updated": ["2021-01-02T00:00:00Z", "2022-02-02T00:00:00Z"],
+            "Owner": ["user1", "user2"],
         }
     )
 
