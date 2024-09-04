@@ -48,6 +48,9 @@ def search_github_repos(extension: str):
                   }}
                   createdAt
                   updatedAt
+                  owner {{
+                    login
+                  }}
                 }}
               }}
             }}
@@ -69,6 +72,7 @@ def search_github_repos(extension: str):
                     "Stars": edge["node"]["stargazers"]["totalCount"],
                     "Created": edge["node"]["createdAt"],
                     "Last Updated": edge["node"]["updatedAt"],
+                    "Owner": edge["node"]["owner"]["login"],
                 }
             )
         page_info = result["data"]["search"]["pageInfo"]
@@ -91,9 +95,10 @@ def generate_readme(df: pd.DataFrame):
     df["Repository"] = df.apply(
         lambda row: f"[{row['Repository']}]({row['Url']})", axis=1
     )
-    # Select the columns to display
+    # Select the columns to display, including the new Owner column
     df = df[
         [
+            "Owner",  # Include the owner column
             "Repository",
             "Stars",
             "Created",
