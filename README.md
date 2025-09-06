@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/mehd-io-duckdb-extension-radar-badge.png)](https://mseep.ai/app/mehd-io-duckdb-extension-radar)
+
 ![DuckDB Extensions Radar](/img/duckdb_extension_radar.png?raw=true)
 # DuckDB Extensions Radar
 
