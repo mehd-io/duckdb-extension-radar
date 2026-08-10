@@ -50,6 +50,17 @@ def test_run_graphql_query(mock_post, mock_response):
     )
 
 
+@patch("requests.post")
+def test_run_graphql_query_raises_for_graphql_errors(mock_post):
+    mock_post.return_value.status_code = 200
+    mock_post.return_value.json.return_value = {
+        "errors": [{"message": "Resource not accessible"}]
+    }
+
+    with pytest.raises(Exception, match="Resource not accessible"):
+        run_graphql_query("query { viewer { login } }")
+
+
 @pytest.fixture
 def graphql_responses():
     """Simulate GraphQL responses for multiple pages."""
@@ -122,3 +133,13 @@ def test_search_github_repos(mock_run_query, graphql_responses):
     )
 
     pd.testing.assert_frame_equal(result_df, expected_df)
+
+
+@patch("duckdb_extension_radar.run_graphql_query")
+def test_search_github_repos_skips_unavailable_results(mock_run_query, mock_response):
+    mock_response["data"]["search"]["edges"].insert(0, {"node": None})
+    mock_run_query.return_value = mock_response
+
+    result_df = search_github_repos("dummy_extension")
+
+    assert result_df["Repository"].tolist() == ["Repo1"]

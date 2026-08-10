@@ -3,18 +3,20 @@ name: Update README with GitHub repos
 on:
   schedule:
     - cron: '0 0 * * *' # Run every day at midnight
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v7
         with:
           python-version: '3.10'
 
@@ -26,6 +28,8 @@ jobs:
 
       - name: Run script
         run: poetry run python duckdb_extension_radar.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.RADAR_GITHUB_SECRET }}
 
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v4
