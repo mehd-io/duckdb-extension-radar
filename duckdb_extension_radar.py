@@ -15,12 +15,17 @@ def run_graphql_query(query: str):
     url = "https://api.github.com/graphql"
     headers = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
     response = requests.post(url, json={"query": query}, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
+    if response.status_code != 200:
         raise Exception(
             f"Query failed to run by returning code of {response.status_code}. {response.text}"
         )
+
+    result = response.json()
+    if result.get("errors"):
+        messages = "; ".join(error["message"] for error in result["errors"])
+        raise Exception(f"GraphQL query failed: {messages}")
+
+    return result
 
 
 def search_github_repos(extension: str):
@@ -35,7 +40,7 @@ def search_github_repos(extension: str):
         pagination_part = f', after: "{cursor}"' if cursor else ""
         query = f"""
         query {{
-          search(query: "extension:{extension}", type: REPOSITORY, first: 10{pagination_part}) {{
+          search(query: "extension:{extension}", type: REPOSITORY, first: 100{pagination_part}) {{
             edges {{
               cursor
               node {{
@@ -64,15 +69,22 @@ def search_github_repos(extension: str):
         result = run_graphql_query(query)
         edges = result["data"]["search"]["edges"]
         for edge in edges:
+            node = edge.get("node")
+            if node is None:
+                logger.warning(
+                    "Skipping a GitHub search result that is no longer available"
+                )
+                continue
+
             repos.append(
                 {
-                    "Repository": edge["node"]["name"],
-                    "Url": edge["node"]["url"],
-                    "About": edge["node"]["description"],
-                    "Stars": edge["node"]["stargazers"]["totalCount"],
-                    "Created": edge["node"]["createdAt"],
-                    "Last Updated": edge["node"]["updatedAt"],
-                    "Owner": edge["node"]["owner"]["login"],
+                    "Repository": node["name"],
+                    "Url": node["url"],
+                    "About": node["description"],
+                    "Stars": node["stargazers"]["totalCount"],
+                    "Created": node["createdAt"],
+                    "Last Updated": node["updatedAt"],
+                    "Owner": node["owner"]["login"],
                 }
             )
         page_info = result["data"]["search"]["pageInfo"]
